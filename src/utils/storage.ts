@@ -1,15 +1,15 @@
-const storagePrefix = 'react-video-test';
-
-const storage = {
-  getToken: () => {
-    return JSON.parse(window.localStorage.getItem(`${storagePrefix}token`) as string);
-  },
-  setToken: (token: string) => {
-    window.localStorage.setItem(`${storagePrefix}token`, JSON.stringify(token));
-  },
-  clearToken: () => {
-    window.localStorage.removeItem(`${storagePrefix}token`);
-  },
+export const getLocalStorage = (key: string) => {
+  let value =
+    localStorage.getItem(key) && localStorage.getItem(key) !== "undefined"
+      ? localStorage.getItem(key)
+      : null;
+  return value !== null ? JSON.parse(value) : null;
 };
 
-export default storage;
+export const setLocalStorage = (key: string, value: any) => {
+  localStorage.setItem(key, JSON.stringify(value));
+};
+
+export const removeLocalStorage = (key: string) => {
+  localStorage.removeItem(key);
+};
