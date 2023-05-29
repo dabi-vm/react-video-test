@@ -1,0 +1,51 @@
+.chaptersContainer {
+  width: 200px;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background: linear-gradient(to bottom, #eeeeee70, #a9c0bd70, #eeeeee70);
+}
+
+.chaptersContainer h6 {
+  margin: 5px;
+}
+
+.chapters {
+  display: flex;
+  flex-direction: column;
+}
+
+.chapters button {
+  display: flex;
+  width: 90%;
+  height: 50px;
+  margin: 5px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #a9c0bd70;
+  border: 1px solid #ffffff00;
+  direction: rtl;
+  color: #383838;
+}
+
+.chapters button:hover {
+  border: 1px solid #bbbbbb;
+  box-shadow: #fff 0px 0px 10px;
+  cursor: pointer;
+}
+
+.chapters h5 {
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  font-family: Calibri, Helvetica, sans-serif;
+}
+
+.chaptersContainer caption {
+  position: relative;
+  width: 170px;
+  padding-left: 10px;
+  font-size: 10px;
+  font-style: italic;
+  text-align: right;
+}
