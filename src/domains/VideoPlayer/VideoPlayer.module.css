@@ -1,0 +1,25 @@
+.container {
+  padding: 10px;
+  background-color: #fbfbfb;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(to right, #e9e9e9, #a9c0bd, #e9e9e9);
+  border-radius: 5px;
+}
+.container video {
+  border-radius: 5px;
+  width: 300px;
+}
+
+
+
+
