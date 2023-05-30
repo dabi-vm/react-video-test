@@ -25,12 +25,13 @@ const HlsVideoPlayer: React.FC<HlsVideoProps> = ({ src, chaptersSrc }) => {
   };
 
   const handleLoadedMetadata = () => {
-    handleSetVideoPlayed(Number(videoRef?.current?.duration));
+    setLocalStorage("videoDuration", videoRef?.current?.duration);
   };
   const handleOnSeeking = () => {
     if (
       videoRef.current?.currentTime &&
-      videoRef.current.currentTime > +getLocalStorage("videoPlayed")
+      videoRef.current.currentTime > +getLocalStorage("videoPlayed") &&
+      +getLocalStorage("completePlayed") !== 1
     ) {
       alert("شما نمی توانید پیش از تماشای کامل این بخش به قسمت های بعد بروید");
       videoRef.current.currentTime = +getLocalStorage("videoPlayed");
@@ -44,19 +45,30 @@ const HlsVideoPlayer: React.FC<HlsVideoProps> = ({ src, chaptersSrc }) => {
       chaptersTime.includes(Math.floor(videoRef.current.currentTime))
     ) {
       handleSetVideoPlayed(Math.floor(videoRef.current.currentTime));
+      if (
+        chaptersTime[chaptersTime.length - 1] ===
+        Math.floor(videoRef.current.currentTime)
+      ) {
+        setLocalStorage("completePlayed", 1);
+      }
     }
   };
 
   const handleClickChapter = (time: number) => {
     if (
       videoRef.current?.currentTime &&
-      time <= +getLocalStorage("videoPlayed")
+      time <= +getLocalStorage("videoPlayed") &&
+      +getLocalStorage("completePlayed") !== 1
     ) {
       videoRef.current.currentTime = time - chaptersTime[0];
       videoRef.current.play();
     } else {
       alert("شما نمی توانید پیش از تماشای کامل این بخش به قسمت های بعد بروید");
     }
+  };
+
+  const handleEnded = () => {
+    setLocalStorage("completePlayed", 1);
   };
 
   useEffect(() => {
@@ -98,6 +110,7 @@ const HlsVideoPlayer: React.FC<HlsVideoProps> = ({ src, chaptersSrc }) => {
         onLoadedMetadata={() => handleLoadedMetadata()}
         onTimeUpdate={() => handleOnTimeUpdate()}
         onSeeking={() => handleOnSeeking()}
+        onEnded={() => handleEnded()}
       >
         <source src={src} type="application/x-mpegURL" />
         <track src={chaptersSrc} default />
