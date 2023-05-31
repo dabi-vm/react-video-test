@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from "react";
+import React, { useRef, useEffect, useMemo, useState } from "react";
 import Hls from "hls.js";
 import { getLocalStorage, setLocalStorage } from "../utils/storage";
 import Chapters from "./Chapters/Chapters";
@@ -10,6 +10,8 @@ interface HlsVideoProps {
 
 const HlsVideoPlayer: React.FC<HlsVideoProps> = ({ src, chaptersSrc }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoPlayed, setVideoPlayed] = useState(0);
+  const [completePlayed, setCompletePlayed] = useState(false);
 
   const chaptersTime = useMemo(() => {
     const duration = +getLocalStorage("videoDuration");
@@ -20,60 +22,55 @@ const HlsVideoPlayer: React.FC<HlsVideoProps> = ({ src, chaptersSrc }) => {
     return times;
   }, []);
 
-  const handleSetVideoPlayed = (time: number) => {
-    setLocalStorage("videoPlayed", time);
-  };
-
   const handleLoadedMetadata = () => {
     setLocalStorage("videoDuration", videoRef?.current?.duration);
   };
   const handleOnSeeking = () => {
     if (
+      !completePlayed &&
       videoRef.current?.currentTime &&
-      videoRef.current.currentTime > +getLocalStorage("videoPlayed") &&
-      +getLocalStorage("completePlayed") !== 1
+      videoRef.current?.currentTime > videoPlayed
     ) {
       alert("شما نمی توانید پیش از تماشای کامل این بخش به قسمت های بعد بروید");
-      videoRef.current.currentTime = +getLocalStorage("videoPlayed");
+      videoRef.current.currentTime = videoPlayed;
       videoRef.current.play();
     }
   };
 
   const handleOnTimeUpdate = () => {
+    const currentTime = videoRef.current?.currentTime;
+
     if (
-      videoRef.current?.currentTime &&
-      chaptersTime.includes(Math.floor(videoRef.current.currentTime))
+      currentTime &&
+      !(completePlayed || videoPlayed >= currentTime) &&
+      chaptersTime.includes(Math.floor(currentTime))
     ) {
-      handleSetVideoPlayed(Math.floor(videoRef.current.currentTime));
-      if (
-        chaptersTime[chaptersTime.length - 1] ===
-        Math.floor(videoRef.current.currentTime)
-      ) {
-        setLocalStorage("completePlayed", 1);
-      }
+      setVideoPlayed(Math.floor(currentTime));
+    }
+    if (
+      chaptersTime[chaptersTime.length - 1] === Math.floor(Number(currentTime))
+    ) {
+      setCompletePlayed(true);
     }
   };
 
   const handleClickChapter = (time: number) => {
     if (
       videoRef.current?.currentTime &&
-      time <= +getLocalStorage("videoPlayed") &&
-      +getLocalStorage("completePlayed") !== 1
+      (completePlayed || time <= videoPlayed)
     ) {
       videoRef.current.currentTime = time - chaptersTime[0];
       videoRef.current.play();
-    } else {
-      alert("شما نمی توانید پیش از تماشای کامل این بخش به قسمت های بعد بروید");
     }
   };
 
   const handleEnded = () => {
-    setLocalStorage("completePlayed", 1);
+    setCompletePlayed(true);
   };
 
   useEffect(() => {
     const video = videoRef.current;
-    handleSetVideoPlayed(0);
+    setVideoPlayed(0);
     const playVideo = () => {
       video?.play();
       document.removeEventListener("click", playVideo);
@@ -115,7 +112,9 @@ const HlsVideoPlayer: React.FC<HlsVideoProps> = ({ src, chaptersSrc }) => {
         <source src={src} type="application/x-mpegURL" />
         <track src={chaptersSrc} default />
       </video>
-      <Chapters {...{ chaptersTime, handleClickChapter }} />
+      <Chapters
+        {...{ chaptersTime, handleClickChapter, videoPlayed, completePlayed }}
+      />
     </>
   );
 };
