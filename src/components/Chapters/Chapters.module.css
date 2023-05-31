@@ -17,8 +17,10 @@
 
 .chapters button {
   display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   width: 90%;
-  height: 50px;
+  height: 60px;
   margin: 5px;
   padding: 10px;
   border-radius: 5px;
@@ -34,6 +36,17 @@
   cursor: pointer;
 }
 
+.chapters button:disabled {
+  border: 1px solid #ffffff00;
+  box-shadow: none;
+  cursor: not-allowed;
+  color: #eee;
+}
+
+.watched {
+  background-color: #358f5d !important;
+}
+
 .chapters h5 {
   padding: 0;
   margin: 0;
@@ -41,7 +54,14 @@
   font-family: Calibri, Helvetica, sans-serif;
 }
 
-.chaptersContainer caption {
+.chapters span {
+  color: #eee;
+  align-self: flex-end;
+  font-size: 12px;
+  direction: ltr;
+}
+
+.chaptersContainer p {
   position: relative;
   width: 170px;
   padding-left: 10px;
